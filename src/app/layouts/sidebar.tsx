@@ -1,3 +1,4 @@
+// Sidebar.tsx
 import React, { useEffect, useMemo, useState } from "react";
 import { NavLink, useLocation } from "react-router-dom";
 import {
@@ -12,9 +13,10 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+import SidebarFooter from "./sidebar-footer";
 
 type Props = {
-  mini: boolean; // CONTROLA largura/visual (md:w-16 vs md:w-64)
+  mini: boolean; // controla largura/visual (md:w-16 vs md:w-64)
   mobileOpen: boolean; // gaveta em < md
   onCloseMobile: () => void;
 };
@@ -28,55 +30,45 @@ type NavGroup = {
 
 const NAV_ITEMS: NavGroup[] = [
   {
-    name: "Prestashop",
+    name: "Fornecedores",
     icon: Store,
-    items: [
-      { to: "/prestashop/payments", label: "Métodos de Pagamento" },
-      { to: "/prestashop/orders/delayed", label: "Encomendas Atrasadas" },
-      { to: "/prestashop/carts/abandoned", label: "Carrinhos Abandonados" },
-      { to: "/prestashop/products/eol", label: "Produtos EOL" },
-      { to: "/prestashop/pages/loading", label: "Carregamento Páginas" },
-    ],
+    items: [{ to: "/suppliers", label: "Métodos de Pagamento" }],
   },
   {
-    name: "Ferramentas",
+    name: "Produtos",
     icon: ToolCase,
     items: [
-      { to: "/patife", label: "Patife" },
-      { to: "/policia", label: "Policia" },
-      { to: "/gc", label: "Gestor de Campanhas" },
+      { to: "/products", label: "Produtos" },
+      { to: "/brands", label: "Marcas" },
+      { to: "/categorias", label: "Categorias" },
     ],
   },
   {
-    name: "Serviços",
+    name: "Encomendas",
     icon: Globe,
-    items: [
-      { to: "/bulkgate", label: "Bulkgate" },
-      { to: "/mailchimp", label: "Mailchimp" },
-    ],
-  },
-  {
-    name: "Métricas",
-    icon: ChartSpline,
-    items: [
-      { to: "/kpi/orders/performance", label: "Perfomance Encomendas" },
-      { to: "/kpi/orders/timeseries", label: "Timeseries Encomendas" },
-    ],
+    items: [{ to: "/orders", label: "Encomendas" }],
   },
   {
     name: "Transportadoras",
     icon: Truck,
     items: [
-      { to: "/carriers/nacex", label: "Nacex" },
-      { to: "/carriers/ctt", label: "CTT" },
-      { to: "/carriers/dpd", label: "DPD" },
-      { to: "/carriers/ttm", label: "TTM" },
+      { to: "/carriers", label: "Transportadoras" },
+      { to: "/carriers/rules", label: "Regras de Envio" },
+    ],
+  },
+  {
+    name: "Preços",
+    icon: ChartSpline,
+    items: [
+      { to: "/prices/price-history", label: "Histórico de Preços" },
+      { to: "/prices/price-drops", label: "Quedas de Preços" },
+      { to: "/prices/price-increase", label: "Subida de Preços" },
     ],
   },
   {
     name: "Sistema",
     icon: MonitorCog,
-    items: [{ to: "/system/runs", label: "Logs de Analises" }],
+    items: [{ to: "/system/runs", label: "Logs de Análises" }],
   },
 ];
 
@@ -108,7 +100,7 @@ export default function Sidebar({ mini, mobileOpen, onCloseMobile }: Props) {
     }
   };
 
-  // estado de grupos abertos (INDEPENDENTE do 'mini')
+  // estado de grupos abertos (independente do 'mini')
   const [open, setOpen] = useState<Record<string, boolean>>(() => readSaved());
 
   // persistência
@@ -142,6 +134,7 @@ export default function Sidebar({ mini, mobileOpen, onCloseMobile }: Props) {
         "fixed md:static inset-y-0 left-0 z-40 h-full md:h-screen border-r",
         "bg-background/70 supports-[backdrop-filter]:bg-background/30 backdrop-blur-xl",
         "transition-[width,transform] duration-200 ease-in-out",
+        "flex flex-col",
         mini ? "w-16" : "w-72 md:w-64",
         mobileOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"
       )}
@@ -161,7 +154,7 @@ export default function Sidebar({ mini, mobileOpen, onCloseMobile }: Props) {
       </div>
 
       {/* Navegação */}
-      <nav className="p-2 space-y-1 overflow-auto h-[calc(100%-3.5rem)] sidebar-scroll">
+      <nav className="p-2 space-y-1 overflow-auto flex-1 sidebar-scroll">
         {/* Dashboard */}
         <NavLink
           to="/"
@@ -175,7 +168,7 @@ export default function Sidebar({ mini, mobileOpen, onCloseMobile }: Props) {
               "hover:bg-accent hover:text-accent-foreground focus-visible:ring-2 focus-visible:ring-ring",
               isActive &&
                 (mini
-                  ? "bg-accent/80 text-accent-foreground ring-1 ring-border"
+                  ? "bg-accent/80 py-3 text-accent-foreground ring-1 ring-border"
                   : "bg-accent text-accent-foreground")
             )
           }
@@ -259,9 +252,7 @@ export default function Sidebar({ mini, mobileOpen, onCloseMobile }: Props) {
                 )}
               </div>
 
-              {/* Conteúdo do grupo:
-                  - se mini => escondemos visualmente SEM mexer no estado 'open'
-                  - se !mini => mostra conforme 'isOpen' */}
+              {/* Conteúdo do grupo */}
               <div
                 id={contentId}
                 className={cn(
@@ -310,6 +301,9 @@ export default function Sidebar({ mini, mobileOpen, onCloseMobile }: Props) {
           );
         })}
       </nav>
+
+      {/* Footer: merchant + user + logout */}
+      <SidebarFooter mini={mini} />
     </aside>
   );
 }
