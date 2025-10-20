@@ -1,3 +1,6 @@
+// src/app/guards/require-auth.tsx
+// Componente para proteger rotas que requerem autenticação
+
 import { Navigate, useLocation } from "react-router-dom";
 import type { PropsWithChildren } from "react";
 import { useAuthToken } from "@/lib/auth-hooks";

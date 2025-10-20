@@ -1,3 +1,6 @@
+// src/app/layouts/public-layout.tsx
+// Layout simples para paginas publicas
+
 import type { PropsWithChildren } from "react";
 
 export function PublicLayout({ children }: PropsWithChildren) {

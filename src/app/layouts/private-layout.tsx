@@ -1,3 +1,6 @@
+// src/app/layouts/private-layout.tsx
+// Layout utilizado para as páginas privadas (autenticadas)
+
 import React, { useEffect, useState } from "react";
 import { Outlet } from "react-router-dom";
 import Topbar from "./topbar";

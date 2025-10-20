@@ -1,4 +1,6 @@
 // src/constants/endpoints.ts
+// Definição dos endpoints da API
+
 export const Endpoints = {
   BASE_URL: import.meta.env.VITE_API_BASE_URL,
   HEALTHZ: "healthz",

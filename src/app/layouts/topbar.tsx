@@ -1,3 +1,6 @@
+// src/app/layouts/topbar.tsx
+// Componente Topbar que exibe o topo da aplicação com botões de navegação, estado do backend, pesquisa e alternância de tema.
+
 import { useHealthz } from "@/features/system/healthz/queries.ts";
 import { StatusDot } from "@/components/feedback/status-dot";
 import { Button } from "@/components/ui/button";

@@ -1,4 +1,6 @@
-// SidebarFooter.tsx
+// app/layouts/sidebar-footer.tsx
+// Componente do rodapé da sidebar com informações do utilizador e logout
+
 import { Button } from "@/components/ui/button";
 import { useMeQuery } from "@/features/auth/login/queries";
 import { useLogout } from "@/lib/auth-hooks";

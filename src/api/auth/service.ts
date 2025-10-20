@@ -1,3 +1,6 @@
+// src/api/auth/service.ts
+// Serviço de API para autenticação de utilizadores
+
 import { HttpClient } from "@/lib/http-client";
 import { Endpoints } from "@/constants/endpoints";
 import type { LoginRequest, LoginResponse } from "./types";

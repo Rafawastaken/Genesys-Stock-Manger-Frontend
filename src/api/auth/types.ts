@@ -1,3 +1,6 @@
+// src/api/auth/types.ts
+// Types para autenticação
+
 export type LoginRequest = {
   email: string;
   password: string;

@@ -1,3 +1,6 @@
+// src/app/app-router.tsx
+// Configuração das rotas da aplicação
+
 import { createBrowserRouter, Navigate } from "react-router-dom";
 import { RequireAuth } from "./guards/require-auth";
 import { PublicLayout } from "./layouts/public-layout";

@@ -1,4 +1,6 @@
-// Sidebar.tsx
+// app/layouts/sidebar.tsx
+// Sidebar de navegação principal
+
 import React, { useEffect, useMemo, useState } from "react";
 import { NavLink, useLocation } from "react-router-dom";
 import {

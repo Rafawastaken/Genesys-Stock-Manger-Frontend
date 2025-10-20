@@ -1,4 +1,6 @@
 // src/features/auth/login/queries.ts
+// Queries e mutations relacionadas à autenticação
+
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { authClient } from "@/api/auth";
 import { authStore } from "@/lib/auth-store";
@@ -19,7 +21,6 @@ export function useLoginMutation() {
 }
 
 export function useMeQuery(enabled = true) {
-  // /auth/me devolve um objeto genérico (OpenAPI não define schema) → tipa como Record<string, unknown>
   return useQuery<Record<string, unknown>, HttpError>({
     queryKey: authKeys.me,
     queryFn: () => authClient.me(),
