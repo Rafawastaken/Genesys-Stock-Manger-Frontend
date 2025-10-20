@@ -1,7 +1,7 @@
 import { createBrowserRouter, Navigate } from "react-router-dom";
 import { RequireAuth } from "./guards/require-auth";
 import { PublicLayout } from "./layouts/public-layout";
-import { PrivateLayout } from "./layouts/private-layout";
+import PrivateLayout from "./layouts/private-layout";
 
 import LoginPage from "@/features/auth/login";
 import HomePage from "@/features/home";

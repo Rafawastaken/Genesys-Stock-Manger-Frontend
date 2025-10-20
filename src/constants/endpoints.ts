@@ -1,6 +1,6 @@
 // src/constants/endpoints.ts
 export const Endpoints = {
-  BASE_URL: import.meta.env.VITE_API_BASE_URL, // http://127.0.0.1:8000/api/v1
+  BASE_URL: import.meta.env.VITE_API_BASE_URL,
   HEALTHZ: "healthz",
   AUTH_LOGIN: "auth/login",
   AUTH_ME: "auth/me",
