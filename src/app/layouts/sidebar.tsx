@@ -7,9 +7,9 @@ import {
   ToolCase,
   Truck,
   ChartSpline,
-  Globe,
   MonitorCog,
   LayoutDashboard,
+  Package2,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -45,7 +45,7 @@ const NAV_ITEMS: NavGroup[] = [
   },
   {
     name: "Encomendas",
-    icon: Globe,
+    icon: Package2,
     items: [{ to: "/orders", label: "Encomendas" }],
   },
   {
