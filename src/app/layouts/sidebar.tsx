@@ -32,7 +32,7 @@ const NAV_ITEMS: NavGroup[] = [
   {
     name: "Fornecedores",
     icon: Store,
-    items: [{ to: "/suppliers", label: "Métodos de Pagamento" }],
+    items: [{ to: "/suppliers", label: "Lista de Fornecedores" }],
   },
   {
     name: "Produtos",
@@ -68,7 +68,10 @@ const NAV_ITEMS: NavGroup[] = [
   {
     name: "Sistema",
     icon: MonitorCog,
-    items: [{ to: "/system/runs", label: "Logs de Análises" }],
+    items: [
+      { to: "/system/runs", label: "Logs de Análises" },
+      { to: "/system/dlq", label: "Erros de sincro" },
+    ],
   },
 ];
 
