@@ -6,6 +6,7 @@ export const Endpoints = {
   HEALTHZ: "healthz",
   AUTH_LOGIN: "auth/login",
   AUTH_ME: "auth/me",
+  // Suppliers
   SUPPLIERS: "suppliers",
   FEED_BY_SUPPLIER: (id: number) => `feeds/supplier/${id}`,
   FEEDS_TEST: "feeds/test",

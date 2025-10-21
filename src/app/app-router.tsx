@@ -8,6 +8,9 @@ import PrivateLayout from "./layouts/private-layout";
 
 import LoginPage from "@/features/auth/login";
 import HomePage from "@/features/home";
+// Suppliers
+import SuppliersPage from "@/features/suppliers";
+import SuppliersCreatePage from "@/features/suppliers/create";
 
 export const router = createBrowserRouter([
   // público
@@ -30,7 +33,9 @@ export const router = createBrowserRouter([
     ),
     children: [
       { index: true, element: <HomePage /> },
-      // outras rotas privadas aqui...
+      // Suppliers
+      { path: "suppliers", element: <SuppliersPage /> },
+      { path: "suppliers/create", element: <SuppliersCreatePage /> },
     ],
   },
 

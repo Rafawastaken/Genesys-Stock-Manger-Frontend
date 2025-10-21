@@ -261,7 +261,7 @@ export default function Sidebar({ mini, mobileOpen, onCloseMobile }: Props) {
               <div
                 id={contentId}
                 className={cn(
-                  "grid transition-[grid-template-rows,opacity] duration-300 ease-in-out",
+                  "grid transition-[grid-template-rows,opacity] duration-300 ease-in-out mt-1",
                   mini
                     ? "grid-rows-[0fr] opacity-0 pointer-events-none"
                     : isOpen
