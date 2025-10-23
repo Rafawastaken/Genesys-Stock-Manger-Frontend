@@ -9,7 +9,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import Highlight from "@/components/genesys-ui/Hightlight";
+import Highlight from "@/components/genesys-ui/hightlight";
 import { fmtDate } from "@/lib/formatters";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
