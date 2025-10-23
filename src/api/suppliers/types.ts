@@ -38,7 +38,7 @@ export type SupplierFeedCreate = {
   csv_delimiter?: string | null;
   headers?: Record<string, string> | null;
   params?: Record<string, string> | null;
-  auth_kind?: string | null; // none|basic|bearer|api_key|oauth_password|ftp_password
+  auth_kind?: string | null;
   auth?: Record<string, any> | null;
   extra?: Record<string, any> | null;
 };
