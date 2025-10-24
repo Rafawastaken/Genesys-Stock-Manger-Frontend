@@ -1,6 +1,6 @@
 // src/features/suppliers/index.tsx
 import { useEffect, useMemo, useState } from "react";
-import { useSuppliersList } from "./queries";
+import { useSuppliersList, supplierKeys } from "./queries";
 import { Card } from "@/components/ui/card";
 import SuppliersTable from "./components/suppliers-table";
 import PageHeader from "./components/page-header";
@@ -8,8 +8,14 @@ import SuppliersToolbar from "./components/toolbar";
 import PaginationBar from "./components/pagination";
 import useDebounced from "./components/use-debounced";
 import SkeletonRows from "./components/skeleton-rows";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { suppliersClient } from "@/api/suppliers";
+import { useNavigate } from "react-router-dom";
 
 export default function SuppliersPage() {
+  const nav = useNavigate();
+  const qc = useQueryClient();
+
   const [searchInput, setSearchInput] = useState<string>("");
   const search = useDebounced(searchInput.trim() || null, 350) as string | null;
 
@@ -22,6 +28,7 @@ export default function SuppliersPage() {
     pageSize,
     search,
   });
+
   const totalPages = useMemo(
     () => (data ? Math.max(1, Math.ceil(data.total / data.page_size)) : 1),
     [data]
@@ -39,6 +46,23 @@ export default function SuppliersPage() {
       ),
     [data?.items, status]
   );
+
+  const [deletingId, setDeletingId] = useState<number | null>(null);
+
+  const deleteM = useMutation({
+    mutationFn: async (id: number) => {
+      setDeletingId(id);
+      // Se o backend devolver 204 No Content, o HttpClient.delete tem de suportar resposta vazia.
+      // Ignoramos o retorno; só precisamos que não lance erro.
+      await suppliersClient.deleteSupplier(id);
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: supplierKeys.root });
+    },
+    onSettled: () => {
+      setDeletingId(null);
+    },
+  });
 
   return (
     <div className="mx-auto space-y-6">
@@ -76,6 +100,9 @@ export default function SuppliersPage() {
             emptyHref="/suppliers/create"
             searchQuery={search}
             SkeletonRows={SkeletonRows}
+            onEdit={(id) => nav(`/suppliers/${id}`)} // ajusta a rota se tiveres /edit
+            onDelete={(id) => deleteM.mutate(id)}
+            deletingId={deletingId}
           />
         </div>
 

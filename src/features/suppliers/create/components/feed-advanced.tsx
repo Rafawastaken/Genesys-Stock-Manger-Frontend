@@ -25,9 +25,6 @@ type AuthKind =
   | "oauth_password"
   | "ftp_password";
 
-const sig = (list?: KV[] | null) =>
-  JSON.stringify((list || []).map(({ key, value }) => [key, value]));
-
 export default function FeedAdvanced() {
   const form = useFormContext();
 
@@ -52,17 +49,12 @@ export default function FeedAdvanced() {
   const showCreds =
     authKind && authKind !== "none" && allowedAuth.includes(authKind);
 
-  const headersKey = `hdr-${sig(headers_kv)}`;
-  const paramsKey = `par-${sig(params_kv)}`;
-  const authKey = `auth-${authKind}-${sig(auth_kv)}`;
-
   return (
     <section className="space-y-6">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div>
           <Label className="mb-3 block">Headers</Label>
           <KVEditor
-            key={headersKey}
             value={headers_kv}
             onChange={(v) =>
               form.setValue("headers_kv", v, { shouldDirty: true })
@@ -74,7 +66,6 @@ export default function FeedAdvanced() {
         <div>
           <Label className="mb-3 block">Query params</Label>
           <KVEditor
-            key={paramsKey}
             value={params_kv}
             onChange={(v) =>
               form.setValue("params_kv", v, { shouldDirty: true })
@@ -117,7 +108,6 @@ export default function FeedAdvanced() {
         <div className="md:col-span-2">
           {showCreds ? (
             <KVEditor
-              key={authKey}
               value={auth_kv}
               onChange={(v) =>
                 form.setValue("auth_kv", v, { shouldDirty: true })

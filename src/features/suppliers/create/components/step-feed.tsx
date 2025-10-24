@@ -24,7 +24,6 @@ import {
   recordToKV,
   safeParseObjJSON,
   ensureAuthShape,
-  sigKV,
   type KV,
 } from "../utils";
 
@@ -297,14 +296,11 @@ export default function StepFeed({
 
   const isHttp = kind === "http";
 
-  // remount controlado do bloco avançado quando auth_kind/auth_kv mudam
+  // Remount controlado: apenas quando muda o tipo de auth (evita remount a cada tecla)
   const watchAuthKind = useWatch({ control, name: "auth_kind" }) as
     | string
     | undefined;
-  const watchAuthKV = (useWatch({ control, name: "auth_kv" }) as KV[]) || [];
-  const feedAdvancedKey = `adv-${watchAuthKind ?? "none"}-${sigKV(
-    watchAuthKV
-  )}`;
+  const feedAdvancedKey = `adv-${watchAuthKind ?? "none"}`;
 
   return (
     <>
