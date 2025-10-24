@@ -1,32 +1,63 @@
 import { Button } from "@/components/ui/button";
 import KeyValueEditor from "./kv-editor";
-import type { KV } from "@/components/shared/KeyValueEditor";
+import type { Row as KV } from "./kv-editor";
 import ConditionRow from "./condition-row";
 
-// lista fixa de operadores (não há endpoint de ops)
-const DEFAULT_OPS = [
+type MapperOp = {
+  op: string;
+  label: string; // obrigatório para alinhar com ConditionRow
+  arity: number;
+  input: "any" | "number" | "regex" | "text";
+};
+
+const FALLBACK_OPS: ReadonlyArray<MapperOp> = [
   { op: "eq", label: "=", arity: 2, input: "any" },
   { op: "neq", label: "≠", arity: 2, input: "any" },
   { op: "gt", label: ">", arity: 2, input: "number" },
   { op: "lt", label: "<", arity: 2, input: "number" },
   { op: "regex", label: "regex", arity: 2, input: "regex" },
   { op: "in", label: "in", arity: 2, input: "text" },
-] as const;
+];
 
 type Rule = {
   when: Array<{ op: string; left: string; right: string | string[] }>;
   set: KV[];
 };
 
+function normalizeOps(
+  arr?: Array<{ op: string; label?: string; arity?: number; input?: string }>
+): MapperOp[] {
+  if (!arr || arr.length === 0) return [...FALLBACK_OPS];
+  return arr.map((o) => {
+    const allowed: Array<MapperOp["input"]> = [
+      "any",
+      "number",
+      "regex",
+      "text",
+    ];
+    const asInput: MapperOp["input"] = allowed.includes(o.input as any)
+      ? (o.input as MapperOp["input"])
+      : "any";
+    return {
+      op: o.op,
+      label: o.label ?? o.op,
+      arity: o.arity ?? 2,
+      input: asInput,
+    };
+  });
+}
+
 export default function RuleEditor({
   value = [],
   onChange,
+  ops = [],
 }: {
   value?: Rule[];
   onChange: (v: Rule[]) => void;
+  ops?: Array<{ op: string; label?: string; arity?: number; input?: string }>;
 }) {
-  const ops = DEFAULT_OPS as any[];
-  const safeOp = ops[0]?.op ?? "eq";
+  const _ops: MapperOp[] = normalizeOps(ops);
+  const safeOp = _ops[0]?.op ?? "eq";
   const list = value ?? [];
 
   const addRule = () =>
@@ -34,11 +65,13 @@ export default function RuleEditor({
       ...list,
       { when: [{ op: safeOp, left: "$field", right: "" }], set: [] },
     ]);
+
   const updateRule = (i: number, patch: Partial<Rule>) => {
     const cur = [...list];
     cur[i] = { ...cur[i], ...patch };
     onChange(cur);
   };
+
   const removeRule = (i: number) => {
     const cur = [...list];
     cur.splice(i, 1);
@@ -56,7 +89,7 @@ export default function RuleEditor({
                 <ConditionRow
                   key={j}
                   value={c}
-                  ops={ops}
+                  ops={_ops}
                   onChange={(v) => {
                     const when = [...(r.when ?? [])];
                     when[j] = v;

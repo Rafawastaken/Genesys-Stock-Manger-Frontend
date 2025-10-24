@@ -56,6 +56,23 @@ export function useValidateMapper(feedId: number) {
   });
 }
 
+export function useMapper(feedId?: number) {
+  return useQuery({
+    queryKey: ["mapper", feedId],
+    queryFn: () => suppliersClient.getMapper(feedId!),
+    enabled: !!feedId,
+    staleTime: 30_000,
+  });
+}
+
+export function useMapperOps() {
+  return useQuery({
+    queryKey: ["mapper-ops"],
+    queryFn: () => suppliersClient.listMapperOps(),
+    staleTime: Infinity,
+  });
+}
+
 export type {
   Supplier,
   SupplierCreate,

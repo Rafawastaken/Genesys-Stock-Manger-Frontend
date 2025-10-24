@@ -63,6 +63,9 @@ export class SuppliersService {
   }
 
   // mapper
+  getMapper(feedId: number) {
+    return this.http.get<FeedMapperOut>(Endpoints.MAPPER_BY_FEED(feedId));
+  }
   upsertMapper(feedId: number, payload: FeedMapperUpsert) {
     return this.http.put<FeedMapperOut>(
       Endpoints.MAPPER_BY_FEED(feedId),
@@ -74,5 +77,11 @@ export class SuppliersService {
       Endpoints.MAPPER_VALIDATE(feedId),
       payload
     );
+  }
+  listMapperOps() {
+    // schema livre no OpenAPI → usar tipo genérico
+    return this.http.get<
+      Array<{ op: string; label?: string; arity?: number; input?: string }>
+    >(Endpoints.MAPPER_OPS);
   }
 }

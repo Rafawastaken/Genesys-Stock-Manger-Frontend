@@ -14,4 +14,5 @@ export const Endpoints = {
   MAPPER_VALIDATE: (id: number) => `mappers/feed/${id}/validate`,
   MAPPERS_OPS: "mappers/ops",
   RUNS_INGEST_SUPPLIER: (id: number) => `runs/supplier/${id}/ingest`,
+  MAPPER_OPS: `/api/v1/mappers/ops`,
 } as const;
