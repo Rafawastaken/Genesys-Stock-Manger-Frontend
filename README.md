@@ -41,12 +41,16 @@ Frontend
 │  │  ├─ feedback
 │  │  │  └─ status-dot.tsx
 │  │  ├─ genesys-ui
-│  │  │  └─ Hightlight.tsx
+│  │  │  └─ hightlight.tsx
 │  │  └─ ui
+│  │     ├─ alert-dialog.tsx
 │  │     ├─ avatar.tsx
 │  │     ├─ badge.tsx
 │  │     ├─ button.tsx
 │  │     ├─ card.tsx
+│  │     ├─ checkbox.tsx
+│  │     ├─ dropdown-menu.tsx
+│  │     ├─ form.tsx
 │  │     ├─ input.tsx
 │  │     ├─ label.tsx
 │  │     ├─ mode-toggle.tsx
@@ -54,7 +58,10 @@ Frontend
 │  │     ├─ separator.tsx
 │  │     ├─ skeleton.tsx
 │  │     ├─ sonner.tsx
+│  │     ├─ switch.tsx
 │  │     ├─ table.tsx
+│  │     ├─ tabs.tsx
+│  │     ├─ textarea.tsx
 │  │     └─ tooltip.tsx
 │  ├─ constants
 │  │  └─ endpoints.ts
@@ -74,6 +81,28 @@ Frontend
 │  │  │  │  ├─ toolbar.tsx
 │  │  │  │  └─ use-debounced.ts
 │  │  │  ├─ create
+│  │  │  │  ├─ components
+│  │  │  │  │  ├─ condition-row.tsx
+│  │  │  │  │  ├─ drop-if-editor.tsx
+│  │  │  │  │  ├─ error-note.tsx
+│  │  │  │  │  ├─ feed-advanced.tsx
+│  │  │  │  │  ├─ feed-origin.tsx
+│  │  │  │  │  ├─ feed-test-preview.tsx
+│  │  │  │  │  ├─ kv-editor.tsx
+│  │  │  │  │  ├─ mapping-field-advanced.tsx
+│  │  │  │  │  ├─ mapping-field-table.tsx
+│  │  │  │  │  ├─ mapping-json-editor.tsx
+│  │  │  │  │  ├─ mapping-required.tsx
+│  │  │  │  │  ├─ rule-editor.tsx
+│  │  │  │  │  ├─ step-feed.tsx
+│  │  │  │  │  ├─ step-mapper.tsx
+│  │  │  │  │  ├─ step-supplier.tsx
+│  │  │  │  │  └─ stepper.tsx
+│  │  │  │  ├─ index.tsx
+│  │  │  │  ├─ mapping-types.ts
+│  │  │  │  ├─ queries.ts
+│  │  │  │  └─ utils.ts
+│  │  │  ├─ edit
 │  │  │  │  └─ index.tsx
 │  │  │  ├─ index.tsx
 │  │  │  └─ queries.ts
