@@ -9,10 +9,12 @@ import type {
   SupplierFeedOut,
   FeedTestRequest,
   FeedTestResponse,
-  FeedMapperUpsert,
   FeedMapperOut,
   MapperValidateIn,
   MapperValidateOut,
+  SupplierDetailOut,
+  SupplierUpdateRequest,
+  MapperUpsertIn,
 } from "./types";
 
 export class SuppliersService {
@@ -27,61 +29,96 @@ export class SuppliersService {
       });
   }
 
-  // suppliers
   createSupplier(payload: SupplierCreate) {
     return this.http.post<Supplier>(Endpoints.SUPPLIERS, payload);
   }
-  getSupplier(id: number) {
-    return this.http.get<Supplier>(`${Endpoints.SUPPLIERS}/${id}`);
+
+  updateSupplierDeep(id: number, payload: SupplierUpdateRequest) {
+    return this.http.put<SupplierDetailOut>(
+      Endpoints.SUPPLIER_BY_ID(id),
+      payload
+    );
   }
-  updateSupplier(id: number, payload: SupplierCreate) {
-    return this.http.put<Supplier>(`${Endpoints.SUPPLIERS}/${id}`, payload);
+
+  updateSupplierOnly(id: number, supplier: SupplierCreate) {
+    return this.updateSupplierDeep(id, { supplier });
   }
+
+  updateSupplierFeed(id: number, feed: SupplierFeedCreate) {
+    return this.updateSupplierDeep(id, { feed });
+  }
+
+  updateSupplierMapper(id: number, mapper: MapperUpsertIn) {
+    return this.updateSupplierDeep(id, { mapper });
+  }
+
+  getSupplierDetail(id: number) {
+    return this.http.get<SupplierDetailOut>(Endpoints.SUPPLIER_BY_ID(id));
+  }
+
   deleteSupplier(id: number) {
-    return this.http.delete<{ ok: boolean }>(`${Endpoints.SUPPLIERS}/${id}`);
+    return this.http.delete<void>(Endpoints.SUPPLIER_BY_ID(id));
   }
+
   list(page = 1, pageSize = 20, searchTerm?: string | null) {
     return this.http.get<SupplierListResponse>(Endpoints.SUPPLIERS, {
       params: { page, page_size: pageSize, search: searchTerm ?? null },
     });
   }
 
-  // feed
   getSupplierFeed(supplierId: number) {
     return this.http.get<SupplierFeedOut>(
       Endpoints.FEED_BY_SUPPLIER(supplierId)
     );
   }
+
   upsertSupplierFeed(supplierId: number, payload: SupplierFeedCreate) {
     return this.http.put<SupplierFeedOut>(
       Endpoints.FEED_BY_SUPPLIER(supplierId),
       payload
     );
   }
+
   testFeed(payload: FeedTestRequest) {
     return this.http.post<FeedTestResponse>(Endpoints.FEEDS_TEST, payload);
   }
 
-  // mapper
-  getMapper(feedId: number) {
+  getMapperByFeed(feedId: number) {
     return this.http.get<FeedMapperOut>(Endpoints.MAPPER_BY_FEED(feedId));
   }
-  upsertMapper(feedId: number, payload: FeedMapperUpsert) {
-    return this.http.put<FeedMapperOut>(
-      Endpoints.MAPPER_BY_FEED(feedId),
-      payload
+
+  getMapperBySupplier(supplierId: number) {
+    return this.http.get<FeedMapperOut | null>(
+      Endpoints.MAPPER_BY_SUPPLIER(supplierId)
     );
   }
+
   validateMapper(feedId: number, payload: MapperValidateIn) {
     return this.http.post<MapperValidateOut>(
       Endpoints.MAPPER_VALIDATE(feedId),
       payload
     );
   }
+
   listMapperOps() {
-    // schema livre no OpenAPI → usar tipo genérico
     return this.http.get<
       Array<{ op: string; label?: string; arity?: number; input?: string }>
     >(Endpoints.MAPPER_OPS);
   }
 }
+
+export type {
+  Supplier,
+  SupplierCreate,
+  SupplierListResponse,
+  SupplierFeedCreate,
+  SupplierFeedOut,
+  FeedTestRequest,
+  FeedTestResponse,
+  FeedMapperOut,
+  MapperValidateIn,
+  MapperValidateOut,
+  SupplierDetailOut,
+  SupplierUpdateRequest,
+  MapperUpsertIn,
+};

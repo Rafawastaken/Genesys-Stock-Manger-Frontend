@@ -56,7 +56,7 @@ export default function SuppliersTable({
   onDelete,
   deletingId,
 }: Props) {
-  const [confirmId, setConfirmId] = useState<number | null>(null);
+  const [_, setConfirmId] = useState<number | null>(null);
 
   return (
     <>

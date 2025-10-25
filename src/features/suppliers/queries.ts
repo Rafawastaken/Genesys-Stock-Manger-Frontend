@@ -1,13 +1,12 @@
-// src/features/suppliers/queries.ts
-
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { suppliersClient } from "@/api/suppliers";
-import type { SupplierListResponse } from "@/api/suppliers";
+import type { SupplierListResponse, SupplierDetailOut } from "@/api/suppliers";
 
 export const supplierKeys = {
   root: ["suppliers"] as const,
   list: (q: { page: number; pageSize: number; search?: string | null }) =>
     [...supplierKeys.root, "list", q] as const,
+  detail: (id?: number | null) => [...supplierKeys.root, "detail", id] as const,
 };
 
 export function useSuppliersList(
@@ -25,5 +24,14 @@ export function useSuppliersList(
     placeholderData: keepPreviousData,
     refetchInterval: 60_000,
     staleTime: 55_000,
+  });
+}
+
+export function useSupplierDetail(id?: number | null) {
+  return useQuery<SupplierDetailOut>({
+    queryKey: supplierKeys.detail(id ?? null),
+    queryFn: () => suppliersClient.getSupplierDetail(id as number),
+    enabled: !!id,
+    staleTime: 30_000,
   });
 }

@@ -5,7 +5,7 @@ export type SupplierCreate = {
   contact_name?: string | null;
   contact_phone?: string | null;
   contact_email?: string | null;
-  margin?: number; // 0..1 (ex.: 0.10 = 10%)
+  margin?: number;
   country?: string | null;
 };
 
@@ -31,16 +31,16 @@ export type SupplierListResponse = {
 };
 
 export type SupplierFeedCreate = {
-  kind: string; // http|ftp|supplier
-  format: string; // csv|json|xml
+  kind: string;
+  format: string;
   url: string;
   active?: boolean;
-  csv_delimiter?: string | null;
   headers?: Record<string, string> | null;
   params?: Record<string, string> | null;
   auth_kind?: string | null;
   auth?: Record<string, any> | null;
   extra?: Record<string, any> | null;
+  csv_delimiter?: string | null;
 };
 
 export type SupplierFeedOut = {
@@ -50,7 +50,13 @@ export type SupplierFeedOut = {
   format: string;
   url: string;
   active: boolean;
+  headers_json?: string | null;
+  params_json?: string | null;
+  auth_kind?: string | null;
+  auth_json?: string | null;
+  extra_json?: string | null;
   csv_delimiter?: string | null;
+  has_auth: boolean;
   created_at: string;
   updated_at: string | null;
 };
@@ -78,11 +84,6 @@ export type FeedTestResponse = {
   error?: string | null;
 };
 
-export type FeedMapperUpsert = {
-  profile: Record<string, any>;
-  bump_version?: boolean;
-};
-
 export type FeedMapperOut = {
   id: number;
   feed_id: number;
@@ -103,4 +104,21 @@ export type MapperValidateOut = {
   warnings: Array<Record<string, any>>;
   required_coverage: Record<string, any>;
   headers_checked: boolean;
+};
+
+export type SupplierDetailOut = {
+  supplier: Supplier;
+  feed: SupplierFeedOut | null;
+  mapper: FeedMapperOut | null;
+};
+
+export type MapperUpsertIn = {
+  profile: Record<string, any>;
+  bump_version?: boolean;
+};
+
+export type SupplierUpdateRequest = {
+  supplier?: SupplierCreate;
+  feed?: SupplierFeedCreate;
+  mapper?: MapperUpsertIn;
 };

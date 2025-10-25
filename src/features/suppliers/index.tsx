@@ -52,8 +52,6 @@ export default function SuppliersPage() {
   const deleteM = useMutation({
     mutationFn: async (id: number) => {
       setDeletingId(id);
-      // Se o backend devolver 204 No Content, o HttpClient.delete tem de suportar resposta vazia.
-      // Ignoramos o retorno; só precisamos que não lance erro.
       await suppliersClient.deleteSupplier(id);
     },
     onSuccess: () => {
@@ -100,7 +98,7 @@ export default function SuppliersPage() {
             emptyHref="/suppliers/create"
             searchQuery={search}
             SkeletonRows={SkeletonRows}
-            onEdit={(id) => nav(`/suppliers/${id}`)} // ajusta a rota se tiveres /edit
+            onEdit={(id) => nav(`/suppliers/${id}/edit`)}
             onDelete={(id) => deleteM.mutate(id)}
             deletingId={deletingId}
           />
