@@ -7,12 +7,12 @@ import type {
   SupplierFeedOut,
   FeedTestRequest,
   FeedTestResponse,
-  FeedMapperUpsert,
   FeedMapperOut,
   MapperValidateIn,
   MapperValidateOut,
 } from "@/api/suppliers";
 
+// Criar supplier
 export function useCreateSupplier() {
   return useMutation({
     mutationFn: (payload: SupplierCreate) =>
@@ -20,6 +20,7 @@ export function useCreateSupplier() {
   });
 }
 
+// Feed
 export function useSupplierFeed(supplierId?: number) {
   return useQuery({
     queryKey: ["supplier-feed", supplierId],
@@ -42,13 +43,20 @@ export function useTestFeed() {
   });
 }
 
-export function useUpsertMapper(feedId: number) {
+// Mapper (guardar via /suppliers/{id})
+type MapperUpsert = {
+  profile: Record<string, any>;
+  bump_version?: boolean;
+};
+
+export function useUpsertMapper(supplierId: number) {
   return useMutation({
-    mutationFn: (payload: FeedMapperUpsert) =>
-      suppliersClient.upsertMapper(feedId, payload),
+    mutationFn: (payload: MapperUpsert) =>
+      suppliersClient.updateSupplierMapper(supplierId, payload),
   });
 }
 
+// Validar mapper (precisa de feedId)
 export function useValidateMapper(feedId: number) {
   return useMutation({
     mutationFn: (payload: MapperValidateIn) =>
@@ -56,15 +64,27 @@ export function useValidateMapper(feedId: number) {
   });
 }
 
-export function useMapper(feedId?: number) {
+// Ler mapper por supplier
+export function useMapperBySupplier(supplierId?: number) {
   return useQuery({
-    queryKey: ["mapper", feedId],
-    queryFn: () => suppliersClient.getMapper(feedId!),
+    queryKey: ["mapper-by-supplier", supplierId],
+    queryFn: () => suppliersClient.getMapperBySupplier(supplierId!),
+    enabled: !!supplierId,
+    staleTime: 30_000,
+  });
+}
+
+// Ler mapper por feed (opcional, se precisares)
+export function useMapperByFeed(feedId?: number) {
+  return useQuery({
+    queryKey: ["mapper-by-feed", feedId],
+    queryFn: () => suppliersClient.getMapperByFeed(feedId!),
     enabled: !!feedId,
     staleTime: 30_000,
   });
 }
 
+// Operações suportadas pelo mapper
 export function useMapperOps() {
   return useQuery({
     queryKey: ["mapper-ops"],
@@ -80,7 +100,6 @@ export type {
   SupplierFeedOut,
   FeedTestRequest,
   FeedTestResponse,
-  FeedMapperUpsert,
   FeedMapperOut,
   MapperValidateIn,
   MapperValidateOut,

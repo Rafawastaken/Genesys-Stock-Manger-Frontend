@@ -1,4 +1,3 @@
-// src/features/suppliers/components/suppliers-table.tsx
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
@@ -33,10 +32,22 @@ import {
 } from "@/components/ui/alert-dialog";
 import { MoreHorizontal, Pencil, Trash2, Loader2 } from "lucide-react";
 import { useState } from "react";
-import type { Supplier } from "@/api/suppliers"; // << usar o tipo da API
+
+type Supplier = {
+  id: number;
+  name: string;
+  active: boolean;
+  logo_image?: string | null;
+  contact_name?: string | null;
+  contact_phone?: string | null;
+  contact_email?: string | null;
+  margin: number;
+  country?: string | null;
+  created_at: string;
+};
 
 type Props = {
-  items: Supplier[];
+  items?: Supplier[]; // ← pode vir undefined no 1º render
   isLoading?: boolean;
   emptyHref: string;
   searchQuery: string | null;
@@ -47,8 +58,8 @@ type Props = {
 };
 
 export default function SuppliersTable({
-  items,
-  isLoading,
+  items = [], // ← default seguro
+  isLoading = false,
   emptyHref,
   searchQuery,
   SkeletonRows,
@@ -56,184 +67,187 @@ export default function SuppliersTable({
   onDelete,
   deletingId,
 }: Props) {
-  const [_, setConfirmId] = useState<number | null>(null);
+  const [confirmId, setConfirmId] = useState<number | null>(null);
+
+  const hasItems = Array.isArray(items) && items.length > 0;
 
   return (
-    <>
-      <Table>
-        <TableHeader className="sticky top-0 z-10 bg-muted/40 backdrop-blur supports-[backdrop-filter]:bg-muted/60">
+    <Table>
+      <TableHeader className="sticky top-0 z-10 bg-muted/40 backdrop-blur supports-[backdrop-filter]:bg-muted/60">
+        <TableRow>
+          <TableHead className="w-[32%]">Fornecedor</TableHead>
+          <TableHead className="w-[10%]">Estado</TableHead>
+          <TableHead className="w-[14%]">País</TableHead>
+          <TableHead className="w-[12%] text-right">Margem</TableHead>
+          <TableHead className="w-[20%]">Email</TableHead>
+          <TableHead className="w-[10%]">Criado em</TableHead>
+          <TableHead className="w-[2%]" />
+        </TableRow>
+      </TableHeader>
+
+      <TableBody>
+        {isLoading ? (
+          // NÃO envolver em TableRow/TableCell
+          <SkeletonRows rows={8} cols={7} />
+        ) : !hasItems ? (
           <TableRow>
-            <TableHead className="w-[32%]">Fornecedor</TableHead>
-            <TableHead className="w-[10%]">Estado</TableHead>
-            <TableHead className="w-[14%]">País</TableHead>
-            <TableHead className="w-[12%] text-right">Margem</TableHead>
-            <TableHead className="w-[20%]">Email</TableHead>
-            <TableHead className="w-[10%]">Criado em</TableHead>
-            <TableHead className="w-[2%]" />
+            <TableCell colSpan={7} className="py-16">
+              <div className="flex flex-col items-center justify-center gap-2 text-center">
+                <Skeleton className="h-12 w-12 rounded-full" />
+                <p className="text-sm text-muted-foreground">
+                  Sem resultados. Ajuste os filtros ou crie um novo fornecedor.
+                </p>
+                <Button asChild size="sm" className="mt-2">
+                  <Link to={emptyHref}>Criar fornecedor</Link>
+                </Button>
+              </div>
+            </TableCell>
           </TableRow>
-        </TableHeader>
+        ) : (
+          items.map((s) => {
+            const isDeleting = deletingId === s.id;
+            return (
+              <TableRow
+                key={s.id}
+                className="group cursor-default transition-colors hover:bg-muted/30"
+              >
+                <TableCell>
+                  <div className="flex items-center gap-3">
+                    <Avatar className="h-8 w-8 border">
+                      {s.logo_image ? (
+                        <AvatarImage src={s.logo_image} alt={s.name} />
+                      ) : (
+                        <AvatarFallback className="text-[10px]">
+                          {(s.name || "?").slice(0, 2).toUpperCase()}
+                        </AvatarFallback>
+                      )}
+                    </Avatar>
 
-        <TableBody>
-          {isLoading && (
-            <TableRow>
-              <TableCell colSpan={7} className="p-0">
-                <SkeletonRows rows={8} cols={7} />
-              </TableCell>
-            </TableRow>
-          )}
-
-          {!isLoading && items.length === 0 && (
-            <TableRow>
-              <TableCell colSpan={7} className="py-16">
-                <div className="flex flex-col items-center justify-center gap-2 text-center">
-                  <Skeleton className="h-12 w-12 rounded-full" />
-                  <p className="text-sm text-muted-foreground">
-                    Sem resultados. Ajuste os filtros ou crie um novo
-                    fornecedor.
-                  </p>
-                  <Button asChild size="sm" className="mt-2">
-                    <Link to={emptyHref}>Criar fornecedor</Link>
-                  </Button>
-                </div>
-              </TableCell>
-            </TableRow>
-          )}
-
-          {!isLoading &&
-            items.map((s) => {
-              const isDeleting = deletingId === s.id;
-              return (
-                <TableRow
-                  key={s.id}
-                  className="group cursor-default transition-colors hover:bg-muted/30"
-                >
-                  <TableCell>
-                    <div className="flex items-center gap-3">
-                      <Avatar className="h-8 w-8 border">
-                        {s.logo_image ? (
-                          <AvatarImage src={s.logo_image} alt={s.name} />
-                        ) : (
-                          <AvatarFallback className="text-[10px]">
-                            {(s.name || "?").slice(0, 2).toUpperCase()}
-                          </AvatarFallback>
-                        )}
-                      </Avatar>
-
-                      <div className="min-w-0">
-                        <div className="truncate font-medium leading-tight">
-                          <Highlight text={s.name} query={searchQuery} />
-                        </div>
-                        {(s.contact_name || s.contact_phone) && (
-                          <div className="truncate text-xs text-muted-foreground">
-                            {s.contact_name ?? "—"}
-                            {s.contact_phone ? ` • ${s.contact_phone}` : ""}
-                          </div>
-                        )}
+                    <div className="min-w-0">
+                      <div className="truncate font-medium leading-tight">
+                        <Highlight text={s.name} query={searchQuery} />
                       </div>
+                      {(s.contact_name || s.contact_phone) && (
+                        <div className="truncate text-xs text-muted-foreground">
+                          {s.contact_name ?? "—"}
+                          {s.contact_phone ? ` • ${s.contact_phone}` : ""}
+                        </div>
+                      )}
                     </div>
-                  </TableCell>
+                  </div>
+                </TableCell>
 
-                  <TableCell>
-                    <Badge
-                      variant={s.active ? "secondary" : "outline"}
-                      className="capitalize"
+                <TableCell>
+                  <Badge
+                    variant={s.active ? "secondary" : "outline"}
+                    className="capitalize"
+                  >
+                    {s.active ? "Ativo" : "Inativo"}
+                  </Badge>
+                </TableCell>
+
+                <TableCell>{s.country || "—"}</TableCell>
+
+                <TableCell className="text-right tabular-nums">
+                  {typeof s.margin === "number" ? `${s.margin}%` : "—"}
+                </TableCell>
+
+                <TableCell>
+                  {s.contact_email ? (
+                    <a
+                      className="hover:underline"
+                      href={`mailto:${s.contact_email}`}
                     >
-                      {s.active ? "Ativo" : "Inativo"}
-                    </Badge>
-                  </TableCell>
+                      <span className="block max-w-[240px] truncate md:max-w-[320px]">
+                        <Highlight text={s.contact_email} query={searchQuery} />
+                      </span>
+                    </a>
+                  ) : (
+                    "—"
+                  )}
+                </TableCell>
 
-                  <TableCell>{s.country ?? "—"}</TableCell>
+                <TableCell>{fmtDate(s.created_at)}</TableCell>
 
-                  <TableCell className="text-right tabular-nums">
-                    {typeof s.margin === "number" ? `${s.margin}%` : "—"}
-                  </TableCell>
-
-                  <TableCell>
-                    {s.contact_email ? (
-                      <a
-                        className="hover:underline"
-                        href={`mailto:${s.contact_email}`}
+                <TableCell className="text-right">
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-8 w-8"
+                        aria-label="Mais ações"
                       >
-                        <span className="block max-w-[240px] truncate md:max-w-[320px]">
-                          <Highlight
-                            text={s.contact_email}
-                            query={searchQuery}
-                          />
-                        </span>
-                      </a>
-                    ) : (
-                      "—"
-                    )}
-                  </TableCell>
+                        {isDeleting ? (
+                          <Loader2 className="h-4 w-4 animate-spin" />
+                        ) : (
+                          <MoreHorizontal className="h-4 w-4" />
+                        )}
+                      </Button>
+                    </DropdownMenuTrigger>
 
-                  <TableCell>{fmtDate(s.created_at)}</TableCell>
+                    <DropdownMenuContent align="end">
+                      <DropdownMenuItem
+                        onClick={() => onEdit?.(s.id)}
+                        className="gap-2"
+                      >
+                        <Pencil className="h-4 w-4" />
+                        Editar
+                      </DropdownMenuItem>
 
-                  <TableCell className="text-right">
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="h-8 w-8"
-                          aria-label="Mais ações"
-                        >
-                          {isDeleting ? (
-                            <Loader2 className="h-4 w-4 animate-spin" />
-                          ) : (
-                            <MoreHorizontal className="h-4 w-4" />
-                          )}
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
-                        <DropdownMenuItem
-                          onClick={() => onEdit?.(s.id)}
-                          className="gap-2"
-                        >
-                          <Pencil className="h-4 w-4" />
-                          Editar
-                        </DropdownMenuItem>
-                        <AlertDialog>
-                          <AlertDialogTrigger asChild>
-                            <DropdownMenuItem
-                              onSelect={(e) => e.preventDefault()}
-                              className="gap-2 text-red-600 focus:text-red-600"
+                      <AlertDialog
+                        open={confirmId === s.id}
+                        onOpenChange={(o) => !o && setConfirmId(null)}
+                      >
+                        <AlertDialogTrigger asChild>
+                          <DropdownMenuItem
+                            onSelect={(e) => {
+                              e.preventDefault();
+                              setConfirmId(s.id);
+                            }}
+                            className="gap-2 text-red-600 focus:text-red-600"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                            Remover
+                          </DropdownMenuItem>
+                        </AlertDialogTrigger>
+
+                        <AlertDialogContent>
+                          <AlertDialogHeader>
+                            <AlertDialogTitle>
+                              Remover fornecedor
+                            </AlertDialogTitle>
+                            <AlertDialogDescription>
+                              Tem a certeza que pretende remover “{s.name}”?
+                              Esta ação é irreversível.
+                            </AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <AlertDialogFooter>
+                            <AlertDialogCancel
+                              onClick={() => setConfirmId(null)}
                             >
-                              <Trash2 className="h-4 w-4" />
+                              Cancelar
+                            </AlertDialogCancel>
+                            <AlertDialogAction
+                              className="bg-red-600 hover:bg-red-700"
+                              onClick={() => {
+                                setConfirmId(null);
+                                onDelete?.(s.id);
+                              }}
+                            >
                               Remover
-                            </DropdownMenuItem>
-                          </AlertDialogTrigger>
-                          <AlertDialogContent>
-                            <AlertDialogHeader>
-                              <AlertDialogTitle>
-                                Remover fornecedor
-                              </AlertDialogTitle>
-                              <AlertDialogDescription>
-                                Tem a certeza que pretende remover “{s.name}”?
-                                Esta ação é irreversível.
-                              </AlertDialogDescription>
-                            </AlertDialogHeader>
-                            <AlertDialogFooter>
-                              <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                              <AlertDialogAction
-                                className="bg-red-600 hover:bg-red-700"
-                                onClick={() => {
-                                  setConfirmId(null);
-                                  onDelete?.(s.id);
-                                }}
-                              >
-                                Remover
-                              </AlertDialogAction>
-                            </AlertDialogFooter>
-                          </AlertDialogContent>
-                        </AlertDialog>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  </TableCell>
-                </TableRow>
-              );
-            })}
-        </TableBody>
-      </Table>
-    </>
+                            </AlertDialogAction>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </TableCell>
+              </TableRow>
+            );
+          })
+        )}
+      </TableBody>
+    </Table>
   );
 }

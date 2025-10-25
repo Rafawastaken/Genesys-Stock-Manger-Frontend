@@ -1,4 +1,4 @@
-// src/features/suppliers/create/components/step-mapping.tsx
+// src/features/suppliers/create/components/step-mapper.tsx
 import { useEffect, useState } from "react";
 import { useForm, FormProvider } from "react-hook-form";
 import {
@@ -19,7 +19,7 @@ import KeyValueEditor from "./kv-editor";
 import { kvToRecord, recordToKV } from "../utils";
 import {
   useSupplierFeed,
-  useMapper,
+  useMapperBySupplier,
   useUpsertMapper,
   useValidateMapper,
   useMapperOps,
@@ -168,8 +168,8 @@ export default function StepMapper({
   onDone,
 }: Props) {
   const feedQ = useSupplierFeed(supplierId);
-  const mapperQ = useMapper(feedId);
-  const upsertM = useUpsertMapper(feedId);
+  const mapperQ = useMapperBySupplier(supplierId);
+  const upsertM = useUpsertMapper(supplierId);
   const validateM = useValidateMapper(feedId);
   const mapperOpsQ = useMapperOps();
 
@@ -185,9 +185,9 @@ export default function StepMapper({
   });
   const feed = feedQ.data as SupplierFeedOut | undefined;
 
-  // 1) Se existir mapper no backend, hidratar o formulário
+  // 1) Hidratar com mapper existente
   useEffect(() => {
-    const m = mapperQ.data as FeedMapperOut | undefined;
+    const m = mapperQ.data as FeedMapperOut | null | undefined;
     if (!m?.profile) return;
     const prof = m.profile || {};
     const input: "csv" | "json" = prof.input === "json" ? "json" : "csv";
@@ -231,9 +231,9 @@ export default function StepMapper({
     setJsonDraft(JSON.stringify(prof, null, 2));
   }, [mapperQ.data, form]);
 
-  // 2) Se não houver mapper ainda, seed pelo formato do feed
+  // 2) Seed quando não existir mapper
   useEffect(() => {
-    if (mapperQ.data) return; // já hidratado acima
+    if (mapperQ.data) return;
     if (feedQ.isLoading) return;
     const fmt = (feed?.format || "csv").toLowerCase() as "csv" | "json";
     const seeded = seedProfileFor(fmt === "json" ? "json" : "csv");
@@ -316,10 +316,8 @@ export default function StepMapper({
             <TabsTrigger value="json">Editor JSON</TabsTrigger>
           </TabsList>
 
-          {/* BUILDER */}
           <TabsContent value="form" className="space-y-6">
             <FormProvider {...form}>
-              {/* Linha 1 */}
               <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
                 <div className="md:col-span-4 space-y-1">
                   <Label>Formato do feed</Label>
@@ -399,7 +397,6 @@ export default function StepMapper({
                   </p>
                 </div>
                 <RuleEditor
-                  // passa ops do backend (ou vazio → o componente faz fallback)
                   ops={mapperOpsQ.data || []}
                   value={form.watch("rules") ?? []}
                   onChange={(r) =>
@@ -422,7 +419,6 @@ export default function StepMapper({
             </FormProvider>
           </TabsContent>
 
-          {/* JSON */}
           <TabsContent value="json">
             <MappingJsonEditor value={jsonDraft} onChange={setJsonDraft} />
           </TabsContent>
