@@ -8,15 +8,15 @@ export const systemKeys = {
 
 export function useHealthz() {
   return useQuery({
-    queryKey: systemKeys.healthz(),
+    queryKey: ["healthz"],
     queryFn: async () => {
-      const started = performance.now();
+      const t0 = performance.now();
       const data = await systemClient.getHealthz();
-      const elapsedMs = Math.max(0, performance.now() - started);
-      const up = data.ok && data.status?.toLowerCase() === "ok";
-      return { ...data, elapsedMs, up };
+      const elapsedMs = Math.max(0, performance.now() - t0);
+      return { ...data, elapsedMs };
     },
-    refetchInterval: 30_000,
-    staleTime: 25_000,
+    staleTime: 60_000,
+    refetchOnWindowFocus: false,
+    refetchInterval: false, // 👈 sem timers
   });
 }
